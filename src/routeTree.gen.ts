@@ -24,6 +24,7 @@ import { Route as AuthenticatedPlataformaRouteImport } from './routes/_authentic
 import { Route as ClubBusinessSlugRouteImport } from './routes/club.$businessSlug'
 import { Route as LegalDocumentRouteImport } from './routes/legal.$document'
 import { Route as MiTarjetaPublicIdRouteImport } from './routes/mi-tarjeta.$publicId'
+import { Route as UnirmeIndexRouteImport } from './routes/unirme.index'
 import { Route as AuthenticatedPanelIndexRouteImport } from './routes/_authenticated/panel.index'
 import { Route as AuthenticatedPanelActividadRouteImport } from './routes/_authenticated/panel.actividad'
 import { Route as AuthenticatedPanelAutomatizacionesRouteImport } from './routes/_authenticated/panel.automatizaciones'
@@ -123,6 +124,11 @@ const LegalDocumentRoute = LegalDocumentRouteImport.update({
 const MiTarjetaPublicIdRoute = MiTarjetaPublicIdRouteImport.update({
   id: '/mi-tarjeta/$publicId',
   path: '/mi-tarjeta/$publicId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnirmeIndexRoute = UnirmeIndexRouteImport.update({
+  id: '/unirme/',
+  path: '/unirme/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedPanelIndexRoute = AuthenticatedPanelIndexRouteImport.update({
@@ -282,6 +288,7 @@ export interface FileRoutesByFullPath {
   '/club/$businessSlug': typeof ClubBusinessSlugRouteWithChildren
   '/legal/$document': typeof LegalDocumentRoute
   '/mi-tarjeta/$publicId': typeof MiTarjetaPublicIdRoute
+  '/unirme/': typeof UnirmeIndexRoute
   '/panel/actividad': typeof AuthenticatedPanelActividadRoute
   '/panel/automatizaciones': typeof AuthenticatedPanelAutomatizacionesRoute
   '/panel/beneficios': typeof AuthenticatedPanelBeneficiosRoute
@@ -320,6 +327,7 @@ export interface FileRoutesByTo {
   '/club/$businessSlug': typeof ClubBusinessSlugRouteWithChildren
   '/legal/$document': typeof LegalDocumentRoute
   '/mi-tarjeta/$publicId': typeof MiTarjetaPublicIdRoute
+  '/unirme': typeof UnirmeIndexRoute
   '/panel/actividad': typeof AuthenticatedPanelActividadRoute
   '/panel/automatizaciones': typeof AuthenticatedPanelAutomatizacionesRoute
   '/panel/beneficios': typeof AuthenticatedPanelBeneficiosRoute
@@ -362,6 +370,7 @@ export interface FileRoutesById {
   '/club/$businessSlug': typeof ClubBusinessSlugRouteWithChildren
   '/legal/$document': typeof LegalDocumentRoute
   '/mi-tarjeta/$publicId': typeof MiTarjetaPublicIdRoute
+  '/unirme/': typeof UnirmeIndexRoute
   '/_authenticated/panel/actividad': typeof AuthenticatedPanelActividadRoute
   '/_authenticated/panel/automatizaciones': typeof AuthenticatedPanelAutomatizacionesRoute
   '/_authenticated/panel/beneficios': typeof AuthenticatedPanelBeneficiosRoute
@@ -403,6 +412,7 @@ export interface FileRouteTypes {
     | '/club/$businessSlug'
     | '/legal/$document'
     | '/mi-tarjeta/$publicId'
+    | '/unirme/'
     | '/panel/actividad'
     | '/panel/automatizaciones'
     | '/panel/beneficios'
@@ -441,6 +451,7 @@ export interface FileRouteTypes {
     | '/club/$businessSlug'
     | '/legal/$document'
     | '/mi-tarjeta/$publicId'
+    | '/unirme'
     | '/panel/actividad'
     | '/panel/automatizaciones'
     | '/panel/beneficios'
@@ -482,6 +493,7 @@ export interface FileRouteTypes {
     | '/club/$businessSlug'
     | '/legal/$document'
     | '/mi-tarjeta/$publicId'
+    | '/unirme/'
     | '/_authenticated/panel/actividad'
     | '/_authenticated/panel/automatizaciones'
     | '/_authenticated/panel/beneficios'
@@ -519,6 +531,7 @@ export interface RootRouteChildren {
   ClubBusinessSlugRoute: typeof ClubBusinessSlugRouteWithChildren
   LegalDocumentRoute: typeof LegalDocumentRoute
   MiTarjetaPublicIdRoute: typeof MiTarjetaPublicIdRoute
+  UnirmeIndexRoute: typeof UnirmeIndexRoute
   UnirmeOrganizationSlugLocationSlugRoute: typeof UnirmeOrganizationSlugLocationSlugRoute
   UnirmeOrganizationSlugIndexRoute: typeof UnirmeOrganizationSlugIndexRoute
 }
@@ -628,6 +641,13 @@ declare module '@tanstack/react-router' {
       path: '/mi-tarjeta/$publicId'
       fullPath: '/mi-tarjeta/$publicId'
       preLoaderRoute: typeof MiTarjetaPublicIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unirme/': {
+      id: '/unirme/'
+      path: '/unirme'
+      fullPath: '/unirme/'
+      preLoaderRoute: typeof UnirmeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/panel/': {
@@ -910,6 +930,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClubBusinessSlugRoute: ClubBusinessSlugRouteWithChildren,
   LegalDocumentRoute: LegalDocumentRoute,
   MiTarjetaPublicIdRoute: MiTarjetaPublicIdRoute,
+  UnirmeIndexRoute: UnirmeIndexRoute,
   UnirmeOrganizationSlugLocationSlugRoute:
     UnirmeOrganizationSlugLocationSlugRoute,
   UnirmeOrganizationSlugIndexRoute: UnirmeOrganizationSlugIndexRoute,

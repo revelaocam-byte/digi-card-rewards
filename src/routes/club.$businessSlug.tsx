@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PublicClubExperience } from "@/components/app/public-club-experience";
+import { loadPublicClubExperience } from "@/lib/public-club";
 
 export const Route = createFileRoute("/club/$businessSlug")({
+  loader: ({ params }) => loadPublicClubExperience(params.businessSlug),
   head: () => ({
     meta: [
       { title: "Club de fidelización" },
@@ -16,5 +18,6 @@ export const Route = createFileRoute("/club/$businessSlug")({
 
 function ClubPage() {
   const { businessSlug } = Route.useParams();
-  return <PublicClubExperience organizationSlug={businessSlug} />;
+  const initialData = Route.useLoaderData();
+  return <PublicClubExperience organizationSlug={businessSlug} initialData={initialData} />;
 }

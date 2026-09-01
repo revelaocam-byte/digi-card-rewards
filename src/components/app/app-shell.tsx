@@ -181,6 +181,33 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    const previousHtmlHeight = html.style.height;
+    const previousBodyHeight = body.style.height;
+    const applyScrollLock = () => {
+      const locked = desktop.matches;
+      html.style.overflow = locked ? "hidden" : previousHtmlOverflow;
+      body.style.overflow = locked ? "hidden" : previousBodyOverflow;
+      html.style.height = locked ? "100dvh" : previousHtmlHeight;
+      body.style.height = locked ? "100dvh" : previousBodyHeight;
+      if (locked) window.scrollTo(0, 0);
+    };
+    applyScrollLock();
+    desktop.addEventListener("change", applyScrollLock);
+    return () => {
+      desktop.removeEventListener("change", applyScrollLock);
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+      html.style.height = previousHtmlHeight;
+      body.style.height = previousBodyHeight;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!session) return;
     const locationKey = `${session.userId}:${(session.organizations ?? []).map((organization) => organization.id).join(",")}:${session.locations.map((location) => location.id).join(",")}`;
     if (initializedLocations.current === locationKey) return;
@@ -603,7 +630,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         collapsed ? "lg:grid-cols-[4.75rem_1fr]" : "lg:grid-cols-[15rem_1fr]",
       )}
     >
-      <aside className="hidden lg:block lg:h-dvh">{sidebar}</aside>
+      <aside className="hidden lg:block lg:h-dvh lg:overflow-hidden">{sidebar}</aside>
 
       <div className="lg:hidden sticky top-0 z-30 flex items-center justify-between border-b bg-card px-3 py-2.5">
         <div className="flex items-center gap-3">

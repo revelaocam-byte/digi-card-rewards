@@ -126,6 +126,9 @@ function WalletPage() {
   const locationId = selectedLocationIds.length === 1 ? selectedLocationIds[0] : null;
   const { t } = useI18n();
   const [design, setDesign] = useState(defaultDesign);
+  const [previewAssets, setPreviewAssets] = useState<
+    Partial<Pick<WalletDesign, "logoUrl" | "heroUrl">>
+  >({});
   const [provider, setProvider] = useState<WalletProvider>("google");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState<"logoUrl" | "heroUrl" | null>(null);
@@ -134,6 +137,25 @@ function WalletPage() {
   const [switching, setSwitching] = useState(false);
   const hydrated = useRef(false);
   const lastSaved = useRef("");
+  const previewAssetsRef = useRef(previewAssets);
+  previewAssetsRef.current = previewAssets;
+
+  const clearPreviewAsset = (kind: "logoUrl" | "heroUrl") => {
+    setPreviewAssets((current) => {
+      const value = current[kind];
+      if (value?.startsWith("blob:")) URL.revokeObjectURL(value);
+      return { ...current, [kind]: undefined };
+    });
+  };
+
+  useEffect(
+    () => () => {
+      Object.values(previewAssetsRef.current).forEach((value) => {
+        if (value?.startsWith("blob:")) URL.revokeObjectURL(value);
+      });
+    },
+    [],
+  );
 
   useEffect(() => {
     const previewUrl = heroCrop?.previewUrl;
@@ -284,6 +306,12 @@ function WalletPage() {
       return;
     }
 
+    const previewUrl = URL.createObjectURL(file);
+    setPreviewAssets((current) => {
+      const previous = current[kind];
+      if (previous?.startsWith("blob:")) URL.revokeObjectURL(previous);
+      return { ...current, [kind]: previewUrl };
+    });
     setUploading(kind);
     const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const name = kind === "logoUrl" ? "wallet-logo" : "wallet-hero";
@@ -293,16 +321,22 @@ function WalletPage() {
     });
     if (error) {
       setUploading(null);
+      clearPreviewAsset(kind);
       toast.error(t("No se pudo subir la imagen"), { description: error.message });
       return;
     }
     const signed = await supabase.storage.from("brand-assets").createSignedUrl(path, 31_536_000);
     setUploading(null);
     if (signed.error) {
+      clearPreviewAsset(kind);
       toast.error(t("No se pudo preparar la imagen"), { description: signed.error.message });
       return;
     }
+    const preload = new Image();
+    preload.src = signed.data.signedUrl;
+    await preload.decode().catch(() => undefined);
     setDesign((current) => ({ ...current, [kind]: signed.data.signedUrl }));
+    clearPreviewAsset(kind);
     toast.success(t("Imagen preparada"));
   };
 
@@ -545,10 +579,23 @@ function WalletPage() {
     );
   if (isLoading) return <Skeleton className="h-96 rounded-xl" />;
 
+  const previewDesign = { ...design, ...previewAssets };
+
   const imageField = (kind: "logoUrl" | "heroUrl", label: string, help: string) => (
     <div className="space-y-2">
       <Label htmlFor={`wallet-${kind}`}>{t(label)}</Label>
       <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed p-3">
+        {previewDesign[kind] ? (
+          <img
+            src={previewDesign[kind]}
+            alt={t(`Vista previa de ${label.toLowerCase()}`)}
+            className={
+              kind === "logoUrl"
+                ? "h-16 w-24 bg-white object-contain p-2"
+                : "h-16 w-32 object-cover"
+            }
+          />
+        ) : null}
         <Input
           id={`wallet-${kind}`}
           type="file"
@@ -573,12 +620,15 @@ function WalletPage() {
             {uploading === kind ? t("Subiendo…") : t(design[kind] ? "Cambiar" : "Seleccionar")}
           </label>
         </Button>
-        {design[kind] ? (
+        {previewDesign[kind] ? (
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => setDesign((current) => ({ ...current, [kind]: "" }))}
+            onClick={() => {
+              clearPreviewAsset(kind);
+              setDesign((current) => ({ ...current, [kind]: "" }));
+            }}
           >
             <X className="size-4" /> {t("Quitar")}
           </Button>
@@ -965,16 +1015,16 @@ function WalletPage() {
             </div>
             {isStampProgram ? (
               <StampWalletPreview
-                design={design}
+                design={previewDesign}
                 issuerName={data?.organization.display_name ?? "Fideleo"}
               />
             ) : provider === "google" ? (
               <GoogleWalletPreview
-                design={design}
+                design={previewDesign}
                 issuerName={data?.organization.display_name ?? "Fideleo"}
               />
             ) : (
-              <AppleWalletPreview design={design} />
+              <AppleWalletPreview design={previewDesign} />
             )}
             <p className="mx-auto mt-4 max-w-md text-center text-xs leading-relaxed text-muted-foreground">
               {provider === "google"

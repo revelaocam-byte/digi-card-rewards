@@ -36,6 +36,10 @@ test("the public home, navigation and 404 render without critical failures", asy
     "href",
     /\/auth/,
   );
+  await page.goto("/unirme/");
+  await expect(page.getByRole("heading", { name: "Escanea el QR de tu local" })).toBeVisible();
+  await page.goto("/unirme/demo-plan-basico/centro");
+  await expect(page.getByRole("heading", { name: "Crea tu tarjeta digital" })).toBeVisible();
   await page.goto("/ruta-que-no-existe");
   await expect(page.getByRole("heading", { name: "Esta visita no suma puntos." })).toBeVisible();
   expect(failures.filter((failure) => !failure.includes("/ruta-que-no-existe"))).toEqual([]);
@@ -95,6 +99,23 @@ test("administrator can open capture personalization and create automation form"
   await expect
     .poll(() => sidebarNavigation.evaluate((element) => getComputedStyle(element).overflowY))
     .toBe("hidden");
+
+  await page.goto("/panel/wallet");
+  await expect(
+    page.getByRole("heading", { name: "Google Wallet", exact: true }),
+  ).toBeVisible();
+  await page.locator("aside").hover();
+  await page.mouse.wheel(0, 1_200);
+  await expect
+    .poll(() =>
+      page.evaluate(() => ({
+        windowY: window.scrollY,
+        documentY: document.documentElement.scrollTop,
+        htmlOverflow: getComputedStyle(document.documentElement).overflowY,
+        bodyOverflow: getComputedStyle(document.body).overflowY,
+      })),
+    )
+    .toEqual({ windowY: 0, documentY: 0, htmlOverflow: "hidden", bodyOverflow: "hidden" });
 
   await page.goto("/panel/automatizaciones");
   await page.getByRole("button", { name: "Nueva automatización" }).click();
