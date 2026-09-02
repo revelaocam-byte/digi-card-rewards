@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { subscriptionPlans } from "@/lib/subscription-plans";
+import type { SubscriptionPlanCode } from "@/lib/subscription-plans";
 import { CookieConsent, openCookieSettingsEvent } from "@/components/app/cookie-consent";
 import { WhatsAppFloating } from "@/components/app/whatsapp-floating";
 import { qrPngDataUrl } from "@/lib/qr";
@@ -163,6 +164,20 @@ const kpis = [
 
 const clubExamplePath = "/club/cafe-norte";
 const backofficeExamplePath = "/auth?email=admin.pro%40demo.fideleo.app";
+const subscriptionCheckoutUrls: Record<SubscriptionPlanCode, string> = {
+  basic:
+    import.meta.env["VITE_STRIPE_BASIC_CHECKOUT_URL"] ||
+    import.meta.env["VITE_STRIPE_ESSENTIAL_CHECKOUT_URL"] ||
+    "https://buy.stripe.com/00wcN486D8up6lPaX90RG00",
+  pro:
+    import.meta.env["VITE_STRIPE_PRO_CHECKOUT_URL"] ||
+    import.meta.env["VITE_STRIPE_GROWTH_CHECKOUT_URL"] ||
+    "https://buy.stripe.com/cNi28q0Eb11XfWp7KX0RG01",
+  ultra:
+    import.meta.env["VITE_STRIPE_ULTRA_CHECKOUT_URL"] ||
+    import.meta.env["VITE_STRIPE_SCALE_CHECKOUT_URL"] ||
+    "https://buy.stripe.com/9B6aEW1If5id9y19T50RG02",
+};
 
 function BrandMark({
   onDark = false,
@@ -590,35 +605,37 @@ function HomePage() {
             Un plan para cada etapa de tu negocio
           </h2>
           <div className="-mx-5 mt-14 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-5 [scrollbar-width:none] lg:mx-auto lg:grid lg:max-w-[1224px] lg:grid-cols-3 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden">
-            {subscriptionPlans.map((plan) => (
-              <article
-                key={plan.name}
-                className={cn(
-                  plan.color,
-                  "flex min-h-[31rem] w-[72vw] max-w-[20rem] shrink-0 snap-center flex-col rounded-[2rem] p-7 text-black sm:p-9 lg:w-auto lg:max-w-none",
-                )}
-              >
-                <h3 className="text-3xl font-semibold">{plan.name}</h3>
-                <p className="mt-5 text-5xl font-semibold tracking-[-.06em]">{plan.price}</p>
-                <p className="mt-1 text-sm text-black/55">al mes · IVA no incluido</p>
-                <ul className="mt-8 space-y-4">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex gap-3">
-                      <Check className="mt-0.5 size-5 shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  asChild
-                  className="mt-auto rounded-full bg-black text-white hover:bg-black/75"
+            {subscriptionPlans.map((plan) => {
+              const checkoutUrl = subscriptionCheckoutUrls[plan.code];
+
+              return (
+                <article
+                  key={plan.name}
+                  className={cn(
+                    plan.color,
+                    "flex min-h-[31rem] w-[72vw] max-w-[20rem] shrink-0 snap-center flex-col rounded-[2rem] p-7 text-black sm:p-9 lg:w-auto lg:max-w-none",
+                  )}
                 >
-                  <Link to="/auth" search={{ tab: "signup" }}>
-                    Comprar
-                  </Link>
-                </Button>
-              </article>
-            ))}
+                  <h3 className="text-3xl font-semibold">{plan.name}</h3>
+                  <p className="mt-5 text-5xl font-semibold tracking-[-.06em]">{plan.price}</p>
+                  <p className="mt-1 text-sm text-black/55">al mes · IVA no incluido</p>
+                  <ul className="mt-8 space-y-4">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex gap-3">
+                        <Check className="mt-0.5 size-5 shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    asChild
+                    className="mt-auto rounded-full bg-black text-white hover:bg-black/75"
+                  >
+                    <a href={checkoutUrl}>Comprar</a>
+                  </Button>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
