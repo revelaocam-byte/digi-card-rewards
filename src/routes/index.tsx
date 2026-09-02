@@ -89,6 +89,18 @@ const howItWorks = [
   },
 ];
 
+// Logos provisionales: se sustituirán por los logos reales de los negocios (todos en el mismo color).
+const placeholderLogos = [
+  { name: "CAFÉ ROMET", className: "text-lg font-extrabold tracking-[0.18em]" },
+  { name: "Bar Elkano", className: "text-xl font-black italic tracking-tight" },
+  { name: "flor & fauna", className: "text-lg font-light lowercase tracking-[0.3em]" },
+  { name: "TASCA NORTE", className: "text-base font-bold tracking-[0.35em]" },
+  { name: "Panadería Sol", className: "text-xl font-semibold tracking-tight" },
+  { name: "VERMUT & CO.", className: "text-lg font-extrabold tracking-[0.12em]" },
+  { name: "la parrilla", className: "text-xl font-light lowercase tracking-[0.22em]" },
+  { name: "KIOSKO 24", className: "text-base font-black tracking-[0.28em]" },
+];
+
 const testimonials = [
   {
     name: "Sofía",
@@ -433,16 +445,28 @@ function HomePage() {
 
       <section className="border-b border-black/10 bg-[#fff0d8] px-5 py-8 lg:px-10">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <p className="max-w-sm text-sm font-semibold">
-            Un sistema flexible para negocios que viven de sus clientes recurrentes
-          </p>
-          <div className="flex flex-wrap gap-x-8 gap-y-3 text-lg font-semibold text-black/40">
-            <span>Cafeterías</span>
-            <span>Restaurantes</span>
-            <span>Retail</span>
-            <span>Franquicias</span>
-            <span>Servicios</span>
+          <div className="flex max-w-sm items-center gap-4">
+            <span className="hidden h-10 w-px shrink-0 bg-black/20 sm:block" aria-hidden="true" />
+            <p className="text-sm font-semibold leading-snug">
+              Un sistema flexible para negocios que viven de sus clientes recurrentes
+            </p>
           </div>
+          <ul className="flex flex-wrap items-center gap-2 lg:gap-2.5" aria-label="Sectores">
+            {["Cafeterías", "Restaurantes", "Retail", "Franquicias", "Servicios"].map(
+              (sector, index) => (
+                <li
+                  key={sector}
+                  className="sector-chip flex items-center gap-2.5 rounded-full border border-black/15 bg-white/40 px-4 py-2 text-sm font-semibold text-black/70 backdrop-blur-sm transition-colors hover:border-black/30 hover:bg-white/70"
+                  style={{ animationDelay: `${index * 90}ms` }}
+                >
+                  <span className="text-[10px] font-bold tracking-widest text-black/35">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  {sector}
+                </li>
+              ),
+            )}
+          </ul>
         </div>
       </section>
 
@@ -803,6 +827,29 @@ function HomePage() {
                 </p>
               </details>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section aria-label="Negocios que confían en Fideleo" className="border-t border-black/10 px-5 py-10 lg:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-black/40">
+            Negocios que ya fidelizan con Fideleo
+          </p>
+          <div
+            className="relative mt-7 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]"
+            aria-hidden="true"
+          >
+            <div className="logo-marquee flex w-max items-center gap-14 pr-14">
+              {[...placeholderLogos, ...placeholderLogos].map((logo, index) => (
+                <span
+                  key={`${logo.name}-${index}`}
+                  className={cn("whitespace-nowrap text-black/40", logo.className)}
+                >
+                  {logo.name}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>
