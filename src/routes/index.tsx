@@ -445,12 +445,9 @@ function HomePage() {
 
       <section className="border-b border-black/10 bg-[#fff0d8] px-5 py-8 lg:px-10">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex max-w-sm items-center gap-4">
-            <span className="hidden h-10 w-px shrink-0 bg-black/20 sm:block" aria-hidden="true" />
-            <p className="text-sm font-semibold leading-snug">
-              Un sistema flexible para negocios que viven de sus clientes recurrentes
-            </p>
-          </div>
+          <p className="max-w-sm text-sm font-semibold leading-snug">
+            Un sistema flexible para negocios que viven de sus clientes recurrentes
+          </p>
           <ul className="flex flex-wrap items-center gap-2 lg:gap-2.5" aria-label="Sectores">
             {["Cafeterías", "Restaurantes", "Retail", "Franquicias", "Servicios"].map(
               (sector, index) => (
@@ -831,20 +828,20 @@ function HomePage() {
         </div>
       </section>
 
-      <section aria-label="Negocios que confían en Fideleo" className="border-t border-black/10 px-5 py-10 lg:px-10">
+      <section aria-label="Negocios que confían en Fideleo" className="bg-black px-5 py-10 lg:px-10">
         <div className="mx-auto max-w-[1440px]">
-          <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-black/40">
+          <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-white/50">
             Negocios que ya fidelizan con Fideleo
           </p>
           <div
-            className="relative mt-7 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]"
+            className="relative mt-7 overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_12%,white_88%,transparent)]"
             aria-hidden="true"
           >
             <div className="logo-marquee flex w-max items-center gap-14 pr-14">
               {[...placeholderLogos, ...placeholderLogos].map((logo, index) => (
                 <span
                   key={`${logo.name}-${index}`}
-                  className={cn("whitespace-nowrap text-black/40", logo.className)}
+                  className={cn("whitespace-nowrap text-white/70", logo.className)}
                 >
                   {logo.name}
                 </span>
